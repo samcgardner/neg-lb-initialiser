@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	lib "bitbucket.org/endclothing/trancentral/h-neg-lb-initialiser/lib"
+	lib "github.com/samcgardner/neg-lb-initialiser/lib"
 	compute "google.golang.org/api/compute/v0.beta"
 	dns "google.golang.org/api/dns/v1"
 )
