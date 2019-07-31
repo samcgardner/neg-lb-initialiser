@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	compute "google.golang.org/api/compute/v0.beta"
 )
@@ -42,7 +43,20 @@ func EnsureHealthCheck(c Config, s *compute.Service) (*compute.HealthCheck, erro
 		return nil, err
 	}
 
-	return &hc, nil
+	// We can't return the HealthCheck we just constructed as it isn't complete,
+	// so grab it from the GCloud API instead
+
+	hcRes, err := s.HealthChecks.Get(c.Project, hc.Name).Do()
+	if err != nil {
+		log.Printf("Error reading backend service back after creation %v\n", err)
+		return nil, err
+	}
+
+	log.Printf("Twiddling our thumbs for 10 seconds to avoid errors from the GCP API. Yeah, really")
+	m, _ := time.ParseDuration("10s")
+	time.Sleep(m)
+
+	return hcRes, nil
 }
 
 func EnsureBackendServices(c Config, s *compute.Service, hc *compute.HealthCheck) (*compute.BackendService, error) {
@@ -72,7 +86,20 @@ func EnsureBackendServices(c Config, s *compute.Service, hc *compute.HealthCheck
 		return nil, err
 	}
 
-	return &be, nil
+	// We can't return the BackendService we just constructed as it isn't complete,
+	// so grab it from the GCloud API instead
+
+	beRes, err := s.BackendServices.Get(c.Project, be.Name).Do()
+	if err != nil {
+		log.Printf("Error reading backend service back after creation %v\n", err)
+		return nil, err
+	}
+
+	log.Printf("Twiddling our thumbs for 10 seconds to avoid errors from the GCP API. Yeah, really")
+	m, _ := time.ParseDuration("10s")
+	time.Sleep(m)
+
+	return beRes, nil
 }
 
 func RegisterNEGs(c Config, s *compute.Service, be *compute.BackendService) error {

@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -21,27 +22,13 @@ func EnsureURLMap(c Config, s *compute.Service, be *compute.BackendService) (*co
 	}
 
 	log.Printf("URL map not present, creating")
+	log.Printf("At present, the API for this is broken. You can use the following console command instead")
+	fmt.Printf(`gcloud compute url-maps create %s-um \
+--default-service %s-be \
+--project=%s`, c.Service, c.Service, c.Project)
+	fmt.Printf("\n")
 
-	/* For reasons thoroughly opaque to me, this (correct) API call fails. You can run the following
-		command manually as a workaround
-
-		gcloud compute url-maps create $SERVICE-um \                                                                                                                                                                                                                                                                         master
-	    --default-service $SERVICE-be \
-			--project=$PROJECT \
-			--global
-	*/
-	URLMap := compute.UrlMap{
-		Name:           fmt.Sprintf("%s-um", c.Service),
-		DefaultService: be.SelfLink,
-	}
-
-	_, err = s.UrlMaps.Insert(c.Project, &URLMap).Do()
-	if err != nil {
-		log.Printf("Error creating URL map %v\n", err)
-		return nil, err
-	}
-
-	return &URLMap, nil
+	return nil, errors.New("Giving up as it is not possible to create a URL map via the API at present")
 }
 
 func EnsureTargetProxy(c Config, s *compute.Service, cert *compute.SslCertificate, um *compute.UrlMap) (*compute.TargetHttpsProxy, error) {
