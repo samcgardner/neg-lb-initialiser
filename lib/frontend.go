@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -22,13 +21,19 @@ func EnsureURLMap(c Config, s *compute.Service, be *compute.BackendService) (*co
 	}
 
 	log.Printf("URL map not present, creating")
-	log.Printf("At present, the API for this is broken. You can use the following console command instead")
-	fmt.Printf(`gcloud compute url-maps create %s-um \
---default-service %s-be \
---project=%s`, c.Service, c.Service, c.Project)
-	fmt.Printf("\n")
 
-	return nil, errors.New("Giving up as it is not possible to create a URL map via the API at present")
+	URLMap := compute.UrlMap{
+		Name:           fmt.Sprintf("%s-um", c.Service),
+		DefaultService: be.SelfLink,
+	}
+
+	_, err = s.UrlMaps.Insert(c.Project, &URLMap).Do()
+	if err != nil {
+		log.Printf("Error creating URL map %v\n", err)
+		return nil, err
+	}
+
+	return &URLMap, nil
 }
 
 func EnsureTargetProxy(c Config, s *compute.Service, cert *compute.SslCertificate, um *compute.UrlMap) (*compute.TargetHttpsProxy, error) {
