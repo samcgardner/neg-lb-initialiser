@@ -1,6 +1,0 @@
-{
-  "project": "dev-777777",
-  "service": "end-react-service",
-  "healthcheck_request_path": "/Testpage",
-  "dns_entry" : "react.dev.endservices.info."
-}

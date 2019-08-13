@@ -1,0 +1,6 @@
+{
+  "project": "dev-777777",
+  "service": "ms-media-service",
+  "healthcheck_request_path": "/resources/prodmedia/media/catalog/product/1/1/11-02-2019_heronpreston_chineseheroncrewsweat_black_hmba003s197570491088_ja_1.jpg",
+  "dns_entry" : "media.dev.endservices.info."
+}
